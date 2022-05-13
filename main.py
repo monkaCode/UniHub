@@ -6,6 +6,9 @@ import json
 with open("guilds.json") as f:
     guildsJson = json.load(f)
 
+# Counter that counts on how many servers the bot is connected
+guild_count = 0 
+
 token = "OTc0NjkwOTAwNjY2MTE4MjE1.GmogGT.hQCi7cfrP-FeWMxfTQcv2mqMHwS_dFIB2_FoBU"
 guild = discord.Object(974705743087431691)
 intents = discord.Intents.default()
@@ -20,6 +23,9 @@ with open("guilds.json", "w") as f:
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
+    for guild in bot.guilds:
+        guild_count = guild_count + 1
+    
 
 @bot.event
 async def on_guild_join(guild=guild):
