@@ -7,6 +7,9 @@ import json
 #     guildsJson = json.load(f)
 
 
+# Counter that counts on how many servers the bot is connected
+guild_count = 0 
+
 token = "OTc0NjkwOTAwNjY2MTE4MjE1.GmogGT.hQCi7cfrP-FeWMxfTQcv2mqMHwS_dFIB2_FoBU"
 guild = discord.Object(974705743087431691)
 intents = discord.Intents.default()
@@ -40,4 +43,3 @@ async def sync(ctx):
     await ctx.send("Synced")
 
 bot.run(token)
-print("Hello World")
