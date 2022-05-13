@@ -38,4 +38,3 @@ async def sync(ctx):
     await ctx.send("Synced")
 
 bot.run(token)
-print("Hello World")
