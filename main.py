@@ -18,6 +18,7 @@ class Color:
 token = "OTc0NjkwOTAwNjY2MTE4MjE1.GmogGT.hQCi7cfrP-FeWMxfTQcv2mqMHwS_dFIB2_FoBU"
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 bot = commands.Bot(command_prefix="unihub!", intents=intents, help_command=None, status=discord.Status.online, activity=discord.Game("UniHub"))
 
@@ -31,23 +32,24 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     x = len(guildsJson["servers"])
-    guildsJson["servers"][x] = {"guild": guild.id, "channel": 0}
+    guildsJson["servers"].append({"guild": guild.id, "channel": 0})
     with open("guilds.json", "w") as f:
         json.dump(guildsJson, f)
+    await bot.get_user(guild.owner_id).send(embed=discord.Embed(title="Vielen Dank dass du UniHub benutzt.", description="Führe den Command /set_info_channel aus um den Info-Channel festzulegen", color=Color.green))
 
 @bot.tree.command()
 async def create_event(interaction: discord.Interaction, category:Literal["Learning", "Gaming", "Dating"], name:str, max_user:int=None):
     guildMain = bot.get_guild(974705743087431691)
     voiceChannel = await guildMain.create_voice_channel(name, category=discord.Object(974813975533482034))
     inviteLink = await guildMain.get_channel(voiceChannel.id).create_invite(max_uses=max_user, unique=True)
-    button = Button(label="Event löschen", style=discord.ButtonStyle.red)
-    async def button_callback(interaction:discord.Interaction):
+    deleteEventButton = Button(label="Event löschen", style=discord.ButtonStyle.red)
+    async def deleteEventButton_callback(interaction:discord.Interaction):
         await guildMain.get_channel(voiceChannel.id).delete()
         await interaction.response.send_message(embed=discord.Embed(title="Du hast diese Event gelöscht"), ephemeral=True)
 
-    button.callback = button_callback
+    deleteEventButton.callback = deleteEventButton_callback
     view = View()
-    view.add_item(button)
+    view.add_item(deleteEventButton)
     await interaction.response.send_message(embed=discord.Embed(title=":white_check_mark: Event wurde erstellt!", description=f"Name: **{name}**\nKategorie: **{category}**\nMaximale Nutzer: **{max_user}**\nHier beitreten: {inviteLink}", color=Color.green), view=view, ephemeral=True)
     with open(r"guilds.json") as f:
         guildsJson = json.load(f)
@@ -61,7 +63,7 @@ async def help(interaction: discord.Interaction):
     embed.add_field(name="Create event", value="/create_event to create a category with a name and optional to function to limit participants", inline=False)
     embed.add_field(name="Set the Unihub text channel", value = "/set_info_channel to set a channel which allows UniHub to share events", inline=False)
     embed.set_footer(text="Help page requested by:{}".format(interaction.user.display_name))
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.tree.command()
 async def set_info_channel(interaction:discord.Interaction, channelid:str):
