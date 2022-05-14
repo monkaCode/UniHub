@@ -13,6 +13,7 @@ guild_count = 0
 class Color:
     green = 0x1ac436
     red = 0xc41a1a
+    orange = 0xff9900
 
 
 token = "OTc0NjkwOTAwNjY2MTE4MjE1.GmogGT.hQCi7cfrP-FeWMxfTQcv2mqMHwS_dFIB2_FoBU"
@@ -56,10 +57,12 @@ async def create_event(interaction: discord.Interaction, category:Literal["Learn
 
 @bot.tree.command()
 async def help(interaction: discord.Interaction):
-    embed = discord.Embed(title = "Help page", description = "All accessible slash commannds for UniHub.", color=Color.green)
+    embed = discord.Embed(title = "Help page", description = "All accessible slash commands for UniHub.", color=Color.orange)
+    createEventCommand = str("""```css\n/create_event```""")
+    setInfoChannelCommand = str("""```css\n/set_info_channel```""")
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/971405638460653688/974942963237023764/unknown.png")
-    embed.add_field(name="Create event", value="/create_event to create a category with a name and optional to function to limit participants", inline=False)
-    embed.add_field(name="Set the Unihub text channel", value = "/set_info_channel to set a channel which allows UniHub to share events", inline=False)
+    embed.add_field(name="Create event", value=createEventCommand + "\nto create a category with a name and optional to function to limit participants", inline=False)
+    embed.add_field(name="Set the Unihub text channel", value =setInfoChannelCommand + "\nto set a channel which allows UniHub to share events", inline=False)
     embed.set_footer(text="Help page requested by:{}".format(interaction.user.display_name))
     await interaction.response.send_message(embed=embed)
 
