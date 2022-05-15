@@ -1,9 +1,1 @@
-{
-    "datetime-code": {
-        "creation_timestamp": "",
-        "ownerid": 0,
-        "category": "",
-        "name": "",
-        "max_user": 0
-    }
-}
+{"402866282082467851": {"category": "Learning", "name": "DSA", "user": [{"id": 402866282082467851}, {"id": 642716053662859284}]}, "642716053662859284": {"category": "Learning", "name": "DSA", "user": [{"id": 642716053662859284}]}}
