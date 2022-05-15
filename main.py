@@ -10,14 +10,19 @@ with open(r"guilds.json") as f:
     guildsJson = json.load(f)
 
 
-# Counter that counts on how many servers the bot is connected
-guild_count = 0
 
 
+
+
+'''
+Class for Colorattributes
+'''
 class Color:
     green = 0x1ac436
     red = 0xc41a1a
 
+# Counter that counts on how many servers the bot is connected
+guild_count = 0
 
 token = "OTc0NjkwOTAwNjY2MTE4MjE1.GmogGT.hQCi7cfrP-FeWMxfTQcv2mqMHwS_dFIB2_FoBU"
 intents = discord.Intents.default()
@@ -45,7 +50,21 @@ async def on_guild_join(guild):
 
 
 @bot.tree.command()
-async def create_event(interaction: discord.Interaction, category: Literal["Learning", "Gaming", "Dating"], name: str, max_user: int = None):
+async def create_event(interaction: discord.Interaction, category: Literal["Learning", "Gaming", "Dating"], name: str, max_user: int):
+    """
+    Command the user has to type to create an event 
+    
+    Parameters
+    ----------
+    category : Literal["Learning", "Gaming", "Dating"]
+
+    name : str
+        Name of the topic the user wants to create an event for 
+    
+    max_user : int 
+        Maximum amount of users who can join the event
+
+    """
     with open("ongoing_events.json") as f:
         ongoingEvents = json.load(f)
     ongoingEvents[str(interaction.user.id)] = {
@@ -59,12 +78,18 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
     voiceChannel = await guildMain.create_voice_channel(name, category=discord.Object(974813975533482034), overwrites=perms)
     inviteLink = await guildMain.get_channel(voiceChannel.id).create_invite(max_uses=max_user, unique=True)
 
+    '''
+    Class representing the Delete and Join-Voice-Channel Button
+    '''
     class Buttons(discord.ui.View):
         def __init__(self, *, timeout=180):
             super().__init__(timeout=timeout)
 
         @discord.ui.button(label="Event löschen", style=discord.ButtonStyle.red)
         async def delete_event(self, buttonInteraction: discord.Interaction, button: discord.Button):
+            """
+            Button the user who created the channel can use to delete the channel  
+            """
             button.disabled = True
             await guildMain.get_channel(voiceChannel.id).delete()
             await buttonInteraction.response.edit_message(embed=discord.Embed(title=":x: Event wurde gelöscht!", color=Color.red), view=self)
@@ -84,7 +109,9 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
         ephemeral=True
     )
 
+
     '''
+    Class representing the Join and Leave Buttons 
     '''
     class InfoButtons(discord.ui.View):
         def __init__(self, *, timeout=180):
@@ -93,6 +120,11 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
 
         @discord.ui.button(label="Event beitreten", style=discord.ButtonStyle.green)
         async def join_event(self, buttonInteraction: discord.Interaction, button: discord.Button):
+            """
+            Button every other user who wants to join the event can click on to join
+            Only allows users up to the given max_user in create_event
+
+            """
             if(self.uses < max_user):
                 with open("ongoing_events.json") as f:
                     ongoingEvents = json.load(f)
@@ -120,6 +152,9 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
 
         @discord.ui.button(label="Event verlassen", style=discord.ButtonStyle.red)
         async def leave_event(self, buttonInteraction: discord.Interaction, button: discord.Button):
+            """
+            Button users can click on to leave the event they have already joined
+            """
             with open("ongoing_events.json") as f:
                 ongoingEvents = json.load(f)
             for x in range(len(ongoingEvents[str(interaction.user.id)]["user"])):
@@ -157,7 +192,7 @@ async def help(interaction: discord.Interaction):
     embed.set_thumbnail(
         url="https://cdn.discordapp.com/attachments/971405638460653688/974942963237023764/unknown.png")
     embed.add_field(name="Create event",
-                    value="/create_event to create a category with a name and optional to function to limit participants", inline=False)
+                    value="/create_event to create a category with a name and function to limit participants", inline=False)
     embed.add_field(name="Set the Unihub text channel",
                     value="/set_info_channel to set a channel which allows UniHub to share events", inline=False)
     embed.set_footer(text="Help page requested by:{}".format(
