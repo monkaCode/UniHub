@@ -72,6 +72,10 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
     view = Buttons()
     view.add_item(discord.ui.Button(label="Voice-Channel beitreten",
                   style=discord.ButtonStyle.link, url=inviteLink.url))
+    channel = guildMain.get_channel(voiceChannel.id)
+    perms = channel.overwrites_for(interaction.user)
+    perms.view_channel = True
+    await channel.set_permissions(interaction.user, overwrite=perms)
     await interaction.response.send_message(embed=discord.Embed(
         title=":white_check_mark: Event wurde erstellt!", 
         description=f"Name: **{name}**\nKategorie: **{category}**\nMaximale Nutzer: **{max_user}**", 
@@ -102,7 +106,7 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
                     {"id": buttonInteraction.user.id})
                 with open("ongoing_events.json", "w") as f:
                     json.dump(ongoingEvents, f)
-                channel = await guildMain.get_channel(voiceChannel.id)
+                channel = guildMain.get_channel(voiceChannel.id)
                 perms = channel.overwrites_for(buttonInteraction.user)
                 perms.view_channel = True
                 await channel.set_permissions(buttonInteraction.user, overwrite=perms)
@@ -130,6 +134,10 @@ async def create_event(interaction: discord.Interaction, category: Literal["Lear
                         title=name, description=f"Kategorie: **{category}**\nAktuelle User: **{self.uses}** / **{max_user}**", 
                         color=Color.green), view=self)
                     break
+            channel = guildMain.get_channel(voiceChannel.id)
+            perms = channel.overwrites_for(buttonInteraction.user)
+            perms.view_channel = False
+            await channel.set_permissions(buttonInteraction.user, overwrite=perms)
             await buttonInteraction.response.send_message(embed=discord.Embed(title=":x: Du bist nicht in diesem Event", 
             color=Color.red), ephemeral=True)
     infoView = InfoButtons()
